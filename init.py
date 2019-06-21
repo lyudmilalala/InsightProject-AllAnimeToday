@@ -18,46 +18,42 @@ def initPostgres():
     PORT_NUM = 5432
     conn = psycopg2.connect(database=DB_NAME, user=USER_NAME, password=USER_PWD, host=HOST_NAME, port=PORT_NUM)
     print('connect to PostgreSQL success')
-    cur = conn.cursor()
     try:
         cur = conn.cursor()
         cur.execute('''DROP SCHEMA public CASCADE;''')
         cur.execute('''CREATE SCHEMA public;''')
+        print('Database emptied successfully')
+
         cur.execute('''CREATE TABLE anime(
-                         a_aid       integer,
+                         a_aid       SERIAL PRIMARY KEY,
                          a_atitle    varchar(255) NOT NULL,
                          a_aimg      varchar(2083),
                          a_language  varchar(255),
-                         PRIMARY KEY (a_aid)
+                         UNIQUE (a_atitle)
                      );''')
+
+        cur.execute('''CREATE INDEX a_by_name ON anime(a_atitle);''')
 
         cur.execute('''CREATE TABLE website(
-                         w_wid       integer,
-                         w_wtitle    varchar(255) NOT NULL,
-                         PRIMARY KEY (w_wid)
+                         w_wid       SERIAL PRIMARY KEY,
+                         w_wtitle    varchar(255) NOT NULL
                      );''')
 
-        cur.execute('''CREATE TABLE ani_web(
-                         aw_aid      integer,
-                         aw_wid      integer,
-                         aw_aurl     varchar(255) NOT NULL,
-                         aw_adate     date,
-                         PRIMARY KEY (aw_aurl),
-                         FOREIGN KEY (aw_aid) REFERENCES anime(a_aid),
-                         FOREIGN KEY (aw_wid) REFERENCES website(w_wid),
-                         UNIQUE (aw_aid, aw_wid)
-                     );''')
+        cur.execute('''CREATE INDEX w_by_name ON website(w_wtitle);''')
 
-        cur.execute('''CREATE TABLE epi_web(
+        cur.execute('''CREATE TABLE episode(
+                         e_eid       SERIAL PRIMARY KEY,
+                         e_aid       integer,
+                         e_wid       integer,
                          e_eurl      varchar(2083),
-                         e_aurl      varchar(2083),
-                         e_enum      integer NOT NULL,
+                         e_enum      varchar(255) NOT NULL,
                          e_edate     date,
-                         PRIMARY KEY (e_eurl),
-                         FOREIGN KEY (e_aurl) REFERENCES ani_web(aw_aurl)
+                         FOREIGN KEY (e_aid) REFERENCES anime(a_aid),
+                         FOREIGN KEY (e_wid) REFERENCES website(w_wid),
+                         UNIQUE (e_aid, e_wid, e_enum)
                      );''')
 
-        cur.execute('''CREATE INDEX by_dates ON epi_web(e_edate);''')
+        cur.execute('''CREATE INDEX e_by_dates ON episode(e_edate);''')
 
         cur.execute('''CREATE TABLE userinfo(
                          u_username      varchar(20),
@@ -114,17 +110,9 @@ def initData():
     bucketname = 'insightanimedata'
     s3 = boto3.client('s3',aws_access_key_id=ACCESS_KEY, aws_secret_access_key=SECRET_KEY)
     try:
-        wlist = ['crunchyroll']
+        wlist = ['9anime', 'crunchyroll', 'kissanime']
         for w in wlist:
-            s3.put_object(Bucket=bucketname, Key=w+'/')
-            s3.put_object(Bucket=bucketname, Key=w+'/init/')
-            s3.put_object(Bucket=bucketname, Key=w+'/init/list_pages/')
-            s3.put_object(Bucket=bucketname, Key=w+'/init/anime_pages/')
             a_pages, e_pages, a_names = crawling.crawl_web(w, 'init')
-            for i in range(len(a_pages)):
-                s3.put_object(Bucket=bucketname, Key=w+'/init/list_pages/'+str(i+1)+'.html', Body=a_pages[i])
-            for i in range(len(e_pages)):
-                s3.put_object(Bucket=bucketname, Key=w+'/init/anime_pages/'+a_names[i]+'.html', Body=e_pages[i])
         print('Initial HTMLs are successfully crawled and stored into S3')
         return True
     except NoCredentialsError:
@@ -132,6 +120,6 @@ def initData():
     return False
 
 
-initS3()
+# initS3()
 initPostgres()
-initData()
+# initData()

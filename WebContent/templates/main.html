@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang = "en">
+<head>
+  <meta charset= "UTF-8">
+  <title>All Anime Today</title>
+</head>
+
+<body>
+
+<h4 id ="success" style = "font-size: 2em;  margin-left: 50px;">Welocme to AllAnimeToday!</h4><br>
+
+<div id="nametag" style= "font-size: 20px; border:1px #CCCCCC solid; float:right; padding:5px;  margin-right: 100px;">
+	<a id="welcome" value = {{name|tojson}} >Hello {{name}}!</a>
+	<input type="button" value="log out" id="logout" style = "margin:5px;" onclick="window.location.href='{{ url_for("login") }}'"/>
+</div>
+
+<div id="search" style = "font-size: 50px; float:left; margin-left: 30px;">
+  <form id="search_bar">
+    <input type="text" id="search_content">
+    <input type="button" value="Search" id="search_button" style = "margin:10px;" onclick="search()"/>
+  </form>
+</div>
+
+<div id="anime_list" style= "margin: 25px;">
+  <div id = "container" style= "display:inline-block; width: 95%;">
+    <div id = "anime_wrapper"></div>
+  </div><br>
+  <div id = "page_count" style= "display:inline-block; margin-left: 40%;">
+    <input type="button" value="previous" id="previous" onclick="getPage(this)"/>
+    <a id="page_num" value=1 style = "font-size: 20px;"> Page N of M </a>
+    <input type="button" value="next" id="next" onclick="getPage(this)"/>
+  </div>
+  <div id = "switch" style= "display:none">
+    <input type="button" value="return" id="return" onclick="getPage(this)"/>
+  </div>
+</div>
+
+<script type="text/javascript" src="static/jquery-3.4.0.js"></script>
+<script>
+
+   getPage($("#return"));
+
+   //print the n page of data
+   function getPage(ele) {
+     // alert("Here 5")
+     var count = parseInt($("#page_num").val());
+     var name = $("#welcome").val();
+     console.log(name)
+     var id = ele.id;
+     if(id == "previous"){
+       count = count-1;
+     }else if (id == "next"){
+       count = count+1;
+     }else{
+       count = 1;
+     }
+     $("#page_num").val(count);
+     // console.log("count= "+count);
+     $.ajax({
+       type : "POST",
+       dataType:'json',
+       data : {
+         Count : count,
+         Name : name
+       },
+       url : "/getPage",
+       success : function(data) {
+         total = data.total;
+         v = " Page " + count + " of " + total + " ";
+         document.getElementById("page_num").innerHTML = v;
+         // console.log(data.titles)
+         // console.log(data.imgs)
+         post(data.titles, data.imgs);
+         console.log(data)
+         var re = document.getElementById("page_count");
+         if (re.style.display == 'none') {
+           re.style.display = 'inline-block';
+         }
+         var p = document.getElementById("switch");
+         if (p.style.display == 'inline-block') {
+           p.style.display = 'none';
+         }
+       }
+     });
+   }
+
+  //search anime by name
+  function search() {
+    var title = $("#search_content").val();
+    if(title!=""){
+			$.ajax({
+				type : "POST",
+        dataType:'json',
+				data : { Title : title },
+				url : "/search",
+				success : function(data) {
+          post(data.titles, data.imgs);
+          var re = document.getElementById("switch");
+      		if (re.style.display == 'none') {
+      			re.style.display = 'inline-block';
+      		}
+      		var p = document.getElementById("page_count");
+      		if (p.style.display ==  'inline-block') {
+      			p.style.display = 'none';
+      		}
+				}
+			});
+		}
+  }
+
+  function post(list1, list2) {
+    // console.log(list)
+    var name = {{name|tojson}};
+    $("#welcome").val(name);
+    console.log("username="+$("#welcome").val())
+    var va = "<ul style = 'list-style-type: none; column-count: 7; padding: 5px; font-size: 20px; border: 3px #CCCCCC solid;' >";
+    for (i = 0; i< list1.length; i++) {
+      title = list1[i];
+      img = list2[i];
+      // console.log('mytitle='+title);
+      va += "<li style = 'height:320px; position: relative; border: 1px #CCCCCC solid;'>";
+      va += "<span class='img_holder'><img src= '"+ img + "' class='anime_poster' width='150' height='210'></span></br>";
+      va += "<a class='anime_title' href = '/info?user="+$("#welcome").val()+"&title="+title+"'>"+title+"</a></br>";
+      va += "</li>";
+    }
+    va += "</ul>"
+    document.getElementById("anime_wrapper").innerHTML = va;
+  }
+
+  // function subscribe() {
+  //   var title = $("#sub").val();
+  //
+  // }
+
+</script>
+
+</body>
+</html>

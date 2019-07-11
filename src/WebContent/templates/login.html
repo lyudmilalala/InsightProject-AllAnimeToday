@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang = "en">
+<head>
+  <meta charset= "UTF-8">
+  <title>Login</title>
+</head>
+
+<body>
+
+<h4 id ="success" style = "font-size: 2em;  margin-left: 50px;">Welocme to AllAnimeToday!</h4><br>
+
+<div id="si" style= "display:inline-block; font-size: 30px; margin-left: 100px;">
+	<form id="login_form">
+    user name: <input type="text" id="name" value= "Yuchen"> <br>
+		password: <input type="text" id="psw" value = "1234567"> <br>
+		<input type="button" value="log in" id="log_button" onclick="signin()"/>
+		<input type="button" value="sign up" id="sign_button" onclick="signup()"/>
+  </form>
+</div>
+
+<div id="su" style= "display:none; font-size: 30px; margin-left: 100px;">
+	<a>Please create an user name and a password with your email</a><br>
+	<form id="signup_form">
+		user name: <input type="text" id="new_name" value=><br>
+    email: <input type="text" id="new_email" value=><br>
+		password: <input type="text" id="new_psw" value=><br>
+		<input type="button" value="sign up" id="add"   onclick="addUser()"/>
+		<input type="button" value="cancel" id="cancel"   onclick="back()"/>
+	</form>
+</div>
+
+<script type="text/javascript" src="static/jquery-3.4.0.js"></script>
+<script>
+
+	//log into the account
+	function signin() {
+		var name = $("#name").val();
+		var password = $("#psw").val();
+		if(name!="" && password!=""){
+      $.ajax({
+				type : "POST",
+        async:false,
+        dataType:'json',
+				data : {
+					Name : name,
+					Psw : password
+				},
+				url : "/signin",
+				success : function(data) {
+          s = data.status;
+					if(s==1){
+            alert("Successful login.");
+            window.location.href="/here?name=" + name;
+            // $.ajax({
+            //     type: "POST",
+            //     async:false,
+            //     url: "/here",
+            //     data: {Name: name},
+            //     success: function (data) {
+            //       // console.log(data)
+            //       alert("Successful login.");
+            //       window.location.href="{{ url_for('display', name="+name+") }}";
+            //
+            //     }
+            // });
+					}else if(s==0){
+						alert("Username or Password is invalid.")
+					}else{
+            alert("Database Error.")
+          }
+				}
+			});
+		}else{
+			console.log("Please input both username and password")
+		}
+	}
+
+	//sign up for a new account
+	function signup(){
+		//switch the form
+		var sign= document.getElementById("su");
+		if (sign.style.display == 'none') {
+			sign.style.display =  'inline-block';
+		}
+		var quest= document.getElementById("si");
+		if (quest.style.display ==  'inline-block') {
+			quest.style.display = 'none';
+		}
+	}
+
+	//add a new user to the table
+	function addUser(){
+		var nn = $("#new_name").val();
+    var ne = $("#new_email").val();
+		var np = $("#new_psw").val();
+    // console.log(nn+"/////"+ne+"/////"+np)
+    if(nn!="" && ne!="" && np!=""){
+      $.ajax({
+        type : "POST",
+        async:false,
+        dataType:'json',
+        data : {
+          Name : nn,
+          Email: ne,
+          Psw : np
+        },
+        url : "/signup",
+        success : function(data) {
+          s = data.status;
+          if(s==1){
+            alert("Successful added.")
+            back();
+          }else if(s==0){
+            alert("Fail to add. The username has already existed.")
+          }else{
+            alert("Database Error.")
+          }
+        }
+      });
+    }else{
+			console.log("Please input both username and password")
+		}
+	}
+
+	//back from the sign up page to log in page
+	function back(){
+		//reset the two forms
+		$("#new_name").val("");
+		$("#new_psw").val("");
+		var su= document.getElementById("su");
+		if (su.style.display == 'inline-block') {
+			su.style.display = 'none';
+		}
+		$("#name").val("Yuchen");
+		$("#psw").val("1234567");
+		var si= document.getElementById("si");
+		if (si.style.display ==  'none') {
+			si.style.display = 'inline-block';
+		}
+	}
+
+</script>
+
+</body>
+</html>

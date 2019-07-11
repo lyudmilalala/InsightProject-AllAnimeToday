@@ -1,9 +1,6 @@
 # Prerequisite
 # AWS_LINUX EC2 server with Python3.6 with Pip3
 
-# Start from the project repo
-cd src
-
 # Set up selenium
 cd BackEnd
 wget https://chromedriver.storage.googleapis.com/2.37/chromedriver_linux64.zip

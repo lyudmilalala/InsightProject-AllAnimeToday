@@ -6,13 +6,13 @@ Though Internet is pretty powerful nowadays, it is still hard for people to find
 
 There are four main steps in our approach.
 
-Collecting requests -- Create a front-end website by Flask to display all available anime and let users subscribe them. 
+1. Collecting requests -- Create a front-end website by Flask to display all available anime and let users subscribe them. 
 
-Pooling data -- We use Selenium to crawl HTML webpages by Selenium and store them in S3 bucket. 
+2. Pooling data -- We use Selenium to crawl HTML webpages by Selenium and store them in S3 bucket. 
 
-Extract and clean information -- We use xpath to collect useful information, such as episode names and links, in each HTML webpage. In later improvement, we record the regular paths to each kind of information in the database, and go through these data to find the information for all three websites in a general method. We then use regular expression and the tags offered by the websites to modify the informations to ensure that the same anime episode from different websites can be matched with each other and merged together. After cleaning, data are stored into PostgreSQL database in AWS RDS. 
+3. Extract and clean information -- We use xpath to collect useful information, such as episode names and links, in each HTML webpage. In later improvement, we record the regular paths to each kind of information in the database, and go through these data to find the information for all three websites in a general method. We then use regular expression and the tags offered by the websites to modify the informations to ensure that the same anime episode from different websites can be matched with each other and merged together. After cleaning, data are stored into PostgreSQL database in AWS RDS. 
 
-Notify users -- Once data have been insert into AWS RDS, a function would be triggered to check whether the animations that a user follows has been updated. If new episodes have been inserted to the database, an email and a text message will be sent by AWS SNS and AWS SES to the user. 
+4. Notify users -- Once data have been insert into AWS RDS, a function would be triggered to check whether the animations that a user follows has been updated. If new episodes have been inserted to the database, an email and a text message will be sent by AWS SNS and AWS SES to the user. 
 
 Here is a pipeline of the application.
 

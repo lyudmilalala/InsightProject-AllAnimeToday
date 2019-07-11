@@ -16,9 +16,12 @@ Notify users -- Once data have been insert into AWS RDS, a function would be tri
 
 Here is a pipeline of the application.
 
-![Image description](https://github.com/lyudmilalala/InsightProject-AllAnimeToday/blob/master/img/Screen%20Shot%202019-07-11%20at%2017.36.08.png)
+![Image description](https://github.com/lyudmilalala/InsightProject-AllAnimeToday/blob/master/img/pipeline.png)
 
 All functions are implemented as AWS Lambda functions. The crawling function is scheduled by the AWS CloudWatch to run periodically, and the later functions are triggered by a AWS SNS notification from its previous function.
+
+![Image description](https://github.com/lyudmilalala/InsightProject-AllAnimeToday/blob/master/img/CloudWatch.png)
+![Image description](https://github.com/lyudmilalala/InsightProject-AllAnimeToday/blob/master/img/SNS.png)
 
 # Structure of Repo
 
@@ -71,14 +74,16 @@ Scripts in `WebContent` build up the frontEnd website where users can view exist
 
 As most of our functions are running as AWS Lambda functions, it is important to understand in what the environments they can run properly and how should we set up the environments. Our database should always be put in a private subnet of a VPC. As our lambda functions input data into and output data from the database, they should also be put in the private subnet and access. On the other hand, these lambda functions also need to connect to the outside Internet in order to get HTML webpages from AWS S3 and send messages to users. Indeed, we need a public subnet that connect to the Internet gateway that allows its traffic to get into the public Internet, and a Network Address Translation (NAT) gateway that conducts the traffic from the private subnet to the public subnet. As we also need to access the services hold by the AWS cloud, such as S3 and SNS, we need to add Endpoints for our VPC to access those services. A structure of our application on cloud looks like this:
 
-![Image description](https://github.com/lyudmilalala/InsightProject-AllAnimeToday/blob/master/img/Screen%20Shot%202019-07-11%20at%2017.32.52.png)
+![Image description](https://github.com/lyudmilalala/InsightProject-AllAnimeToday/blob/master/img/structure.png)
 
 To build up such structure:
 
 1. Following this link https://gist.github.com/reggi/dc5f2620b7b4f515e68e46255ac042a7 to create a VPC with subnet and NAT.
 
    For more information, look into:
+   
    https://docs.aws.amazon.com/lambda/latest/dg/vpc.html
+   
    https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Scenario2.html
 
 2. Following this link https://aws.amazon.com/blogs/aws/new-vpc-endpoint-for-amazon-s3/ to add a S3 EndPoint to your VPC.
@@ -103,4 +108,10 @@ Get into your AWS console, go Lambda -> Functions, and in the designer part, add
 
 * SNS Topic `MessageTrigger` to `MessageSender`
 
-Now you are all set. Please get onto the website http://datawonderland.club/, choose the animations that you want to subscribe, and expect for automatic updates!
+Now you are all set. Please get onto the website http://datawonderland.club/, choose the animations that you want to subscribe, and expect for automatic updates! Have Fun!!!
+
+![Image description](https://github.com/lyudmilalala/InsightProject-AllAnimeToday/blob/master/img/Website1.png)
+
+![Image description](https://github.com/lyudmilalala/InsightProject-AllAnimeToday/blob/master/img/Website2.png)
+
+![Image description](https://github.com/lyudmilalala/InsightProject-AllAnimeToday/blob/master/img/Website3.png)

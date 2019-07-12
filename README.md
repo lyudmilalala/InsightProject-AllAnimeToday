@@ -1,6 +1,18 @@
 # AllAnimeToday
 
-Though Internet is pretty powerful nowadays, it is still hard for people to find the resource they want sometimes. To decrease the effort needs by anime fans to find the newly released episode of the animations they love, Saina Shawulieti designed a project that could send the users the links of anime episodes once they were released. This project aims at improving Saina's project by increasing the number of resource websites and implementing the whole process with AWS Lambda serverless functions. As a result, users get more available information, and can choose to watch anime on the website they like the most. Developers would also be glad to save the cost of maintaining EC2 servers. Such multi-resource subscribe system can be applied to all kinds of merchant goods, notifying buyers about the newly available items they want.
+Though Internet is pretty powerful nowadays, it is still hard for anime lovers to find the resource they want. To decrease the effort needs by anime fans to find the newly released episode of the animations they love, Saina Shawulieti designed a project https://github.com/sainas/AnimeToday that could send the users the links of anime episodes once they were released. 
+
+This project aims at improving Saina's project by 
+
+1. increasing the number of resource websites
+
+2. dealing with the data cleaning and merging problems brought by multiple resource
+
+2. implementing the whole process with AWS Lambda serverless functions
+
+4. implementing a frontend website on which users can select the animations they want to subscribe
+
+With improvement, users get more available information, and can choose to watch anime on the website they like the most. Developers would also be glad to save the cost of maintaining EC2 servers. Such multi-resource subscribe system can be applied to all kinds of merchant goods, notifying buyers about the newly available items they want.
 
 # Methodology
 
@@ -72,7 +84,7 @@ Scripts in `WebContent` build up the frontEnd website where users can view exist
 
 ## Configuration of the VPC
 
-As most of our functions are running as AWS Lambda functions, it is important to understand in what the environments they can run properly and how should we set up the environments. Our database should always be put in a private subnet of a VPC. As our lambda functions input data into and output data from the database, they should also be put in the private subnet and access. On the other hand, these lambda functions also need to connect to the outside Internet in order to get HTML webpages from AWS S3 and send messages to users. Indeed, we need a public subnet that connect to the Internet gateway that allows its traffic to get into the public Internet, and a Network Address Translation (NAT) gateway that conducts the traffic from the private subnet to the public subnet. As we also need to access the services hold by the AWS cloud, such as S3 and SNS, we need to add Endpoints for our VPC to access those services. A structure of our application on cloud looks like this:
+As most of our functions are running as AWS Lambda functions, it is important to understand in what the environments they can run properly and how should we set up the environments. Our database should always be put in a private subnet of a VPC. As our lambda functions input data into and output data from the database, they should also be put in the private subnet and access. On the other hand, these lambda functions also need to connect to the outside Internet in order to get HTML webpages from AWS S3 and send messages to users. Indeed, we need a public subnet that connect to the Internet gateway that allows its traffic to get into the public Internet, and a Network Address Translation (NAT) gateway that conducts the traffic from the private subnet to the public subnet. As we also need to access the services hold by the AWS cloud, such as S3 and SNS, we need to add Endpoints for our VPC to access those services. A architecture structure of our application on cloud looks like this:
 
 ![Image description](https://github.com/lyudmilalala/InsightProject-AllAnimeToday/blob/master/img/structure.png)
 

@@ -88,7 +88,7 @@ As most of our functions are running as AWS Lambda functions, it is important to
 
 ![Image description](https://github.com/lyudmilalala/InsightProject-AllAnimeToday/blob/master/img/structure.png)
 
-To build up such structure:
+To build up such architecture:
 
 1. Following this link https://gist.github.com/reggi/dc5f2620b7b4f515e68e46255ac042a7 to create a VPC with subnet and NAT.
 

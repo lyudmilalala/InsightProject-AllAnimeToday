@@ -322,7 +322,7 @@ def lambda_handler(event, context):
     # timestamp = msg['timestamp']
     timestamp = '2019-07-06'
     s3,rds = conn()
-    
+
     t1 = threading.Thread(target=load, args=(s3, rds, '9anime', timestamp))
     t2 = threading.Thread(target=load, args=(s3, rds, 'crunchyroll', timestamp))
     t3 = threading.Thread(target=load, args=(s3, rds, 'kissanime', timestamp))
@@ -336,6 +336,5 @@ def lambda_handler(event, context):
     t3.join()
 
     print('Multithreads finish!')
-    
-    # userUpdateTrigger(timestamp)
 
+    # userUpdateTrigger(timestamp)

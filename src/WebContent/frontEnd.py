@@ -22,7 +22,7 @@ def conn():
 def login():
     return render_template('login.html')
 
-@app.route('/here', methods=['GET', 'POST'])
+@app.route('/username', methods=['GET', 'POST'])
 def display():
     # import pdb;pdb.set_trace()
     name = request.args['name']
@@ -57,20 +57,21 @@ def signup():
     name = request.form['Name']
     email = request.form['Email']
     psw = request.form['Psw']
-    s = -1
+    msg = request.form['Msg']
     try:
         cur = rds.cursor()
         statement = "SELECT u_username FROM userinfo WHERE u_username = %s;"
         cur.execute(statement, (name,))
         rows = cur.fetchall()
         if len(rows) == 0:
-            cur.execute("INSERT INTO userinfo VALUES (%s, %s, %s);", (name, psw, email))
+            cur.execute("INSERT INTO userinfo VALUES (%s, %s, %s, %s);", (name, psw, email, msg))
             rds.commit()
             s = 1
         else:
             s = 0
     except psycopg2.DatabaseError as error:
         print(error)
+        s = -1
     finally:
         cur.close()
         rds.close()

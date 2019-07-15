@@ -3,35 +3,85 @@
 <head>
   <meta charset= "UTF-8">
   <title>All Anime Today</title>
+  <style type="text/css">
+      ul {
+        list-style-type: none;
+        column-count: 7;
+        padding:10px 10px 0px 15px;
+        border: 10px #F08080 solid;
+      }
+      li {
+        height:300px;
+        width:170px;
+        position: relative;
+        padding:5px 5px;
+        margin-bottom: 10px;
+        font-size: 20px;
+        border: 2px #F08080 solid;
+      }
+      li:hover {
+        box-shadow: 0 5px 5px 0 rgba(0,0,0,0.10),0 5px 10px 0 rgba(0,0,0,0.40);
+        transform: translate(2px, 2px);
+      }
+      .btns {
+        width:122px;
+        height:50px;
+        color:#F08080;
+        border: 2px #FFB6C1 solid;
+        font-size: 25px;
+        background:#FFFFFF;
+        margin: 5px;
+      }
+      input.btns:hover {
+        box-shadow: 0 5px 5px 0 rgba(0,0,0,0.10),0 5px 10px 0 rgba(0,0,0,0.40);
+        transform: translate(2px, 2px);
+      }
+      input.btns:active {
+        background-color: #F5F5F5;
+        box-shadow: 0 5px 5px 0 rgba(0,0,0,0.10),0 5px 10px 0 rgba(0,0,0,0.40);
+        transform: translateY(5px);
+      }
+      .textblock {
+        height:35px;
+        width:300px;
+      }
+  </style>
 </head>
 
 <body>
 
-<h4 id ="success" style = "font-size: 2em;  margin-left: 50px;">Welocme to AllAnimeToday!</h4><br>
-
-<div id="nametag" style= "font-size: 20px; border:1px #CCCCCC solid; float:right; padding:5px;  margin-right: 100px;">
-	<a id="welcome" value = {{name|tojson}} >Hello {{name}}!</a>
-	<input type="button" value="log out" id="logout" style = "margin:5px;" onclick="window.location.href='{{ url_for("login") }}'"/>
+<div style = "margin: 30px 20px 10px;">
+  <span id ="success" style = "font-size: 3em; font-weight: bolder; font-family:fantasy; color: #F08080">Welcome to AllAnimeToday!</span><br>
 </div>
 
-<div id="search" style = "font-size: 50px; float:left; margin-left: 30px;">
-  <form id="search_bar">
-    <input type="text" id="search_content">
-    <input type="button" value="Search" id="search_button" style = "margin:10px;" onclick="search()"/>
-  </form>
-</div>
+<div style="font-size: 0;">
 
-<div id="anime_list" style= "margin: 25px;">
-  <div id = "container" style= "display:inline-block; width: 95%;">
-    <div id = "anime_wrapper"></div>
-  </div><br>
-  <div id = "page_count" style= "display:inline-block; margin-left: 40%;">
-    <input type="button" value="previous" id="previous" onclick="getPage(this)"/>
-    <a id="page_num" value=1 style = "font-size: 20px;"> Page N of M </a>
-    <input type="button" value="next" id="next" onclick="getPage(this)"/>
+  <div style = "display:inline-block; background:#F08080; width: 98%">
+    <div id="search" style = "float:left; margin-left: 30px; padding:5px;">
+      <form id="search_bar">
+        <input type="text" class = "textblock" id="search_content">
+        <input type="button" value="Search" class = "btns" id="search_button" onclick="search()"/>
+      </form>
+    </div>
+
+    <div id="nametag" style= "margin-right: 30px; float:right; padding:5px;">
+      <a id="welcome" value = {{name|tojson}} style= "font-size: 32px; font-weight: bold; color:#FFFFFF;">Hello {{name}}!  </a>
+      <input type="button" value="log out" class = "btns" id="logout" style = "margin:5px;" onclick="window.location.href='{{ url_for("login") }}'"/>
+    </div>
   </div>
-  <div id = "switch" style= "display:none">
-    <input type="button" value="return" id="return" onclick="getPage(this)"/>
+
+  <div id="anime_list">
+    <div id = "container" style= "display:inline-block; width: 98%;">
+      <div id = "anime_wrapper"></div>
+    </div><br>
+    <div id = "page_count" style= "display:inline-block; margin-left: 30%;">
+      <input type="button" value="previous" class = "btns" id="previous" onclick="getPage(this)"/>
+      <a id="page_num" value=1 style = "font-size: 25px;"> Page N of M </a>
+      <input type="button" value="next" class = "btns" id="next" onclick="getPage(this)"/>
+    </div>
+    <div id = "switch" style= "display:none">
+      <input type="button" value="return" class = "btns" id="return" onclick="getPage(this)"/>
+    </div>
   </div>
 </div>
 
@@ -52,7 +102,7 @@
      }else if (id == "next"){
        count = count+1;
      }else{
-       count = 1;
+       count = 10;
      }
      $("#page_num").val(count);
      // console.log("count= "+count);
@@ -113,14 +163,17 @@
     var name = {{name|tojson}};
     $("#welcome").val(name);
     console.log("username="+$("#welcome").val())
-    var va = "<ul style = 'list-style-type: none; column-count: 7; padding: 5px; font-size: 20px; border: 3px #CCCCCC solid;' >";
+    var va = "<ul>";
     for (i = 0; i< list1.length; i++) {
       title = list1[i];
       img = list2[i];
       // console.log('mytitle='+title);
-      va += "<li style = 'height:320px; position: relative; border: 1px #CCCCCC solid;'>";
-      va += "<span class='img_holder'><img src= '"+ img + "' class='anime_poster' width='150' height='210'></span></br>";
-      va += "<a class='anime_title' href = '/info?user="+$("#welcome").val()+"&title="+title+"'>"+title+"</a></br>";
+      va += "<li>";
+      // va += "<span class='img_holder'><img src= '"+ img + "' class='anime_poster' width='100px' height='210'></span></br>";
+      // va += "<a class='anime_title' href = '/info?user="+$("#welcome").val()+"&title="+title+"'>"+title+"</a></br>";
+      va += "<a id='anime_title' href = '/info?user="+$("#welcome").val()+"&title="+title+"'>"
+      va += "<img src= '"+ img + "' width='100%' height='210px'>"
+      va += "<span>"+title+"</span>"
       va += "</li>";
     }
     va += "</ul>"

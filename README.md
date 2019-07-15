@@ -45,6 +45,7 @@ The directory structure for your repo should look like this:
     │   └── BackEnd
     │       └── run.sh
     │       └── init.py
+    │       └── get_cookies.py 
     │       └── crawling.py
     │       └── loadtoDB.py
     │       └── userUpdate.py
@@ -66,6 +67,8 @@ The `src` folder holds function scripts. Scripts in `BackEnd` are used for serve
 
 * `crawling.py`: the function for crawling HTML webpages from websites
     
+* `get_cookies.py`: the function for setting cookies for crawling
+
 * `loadtoDB.py`: the function for extracting information from HTML webpages, cleaning, merging, and finally storing them into the database
     
 * `userUpdate.py`: the function for checking whether new episodes of the animations that users follow have been inserted into the database
@@ -107,6 +110,10 @@ To build up such architecture:
 To run lambda functions, you need grant an AWS Lambda Execution Role. Following the instruction below to create a AWS Lambda Execution Role in IAM, and then replace the  `<your-lambda-user-arn>` in `src/BackEnd/run.sh` the arn of your role.
 
 https://docs.aws.amazon.com/lambda/latest/dg/lambda-intro-execution-role.html
+
+## Get cookies
+
+Set `COOKIE_SAVE_PATH` and `HOST` in `get_cookies.py` to your local directory and the remote EC2 server where you would like to run your crawling script. On your local machine, run `get_cookies.py`. The cookies of each website will be sent directly to the root repository of your EC2.
 
 ## Start the application
 

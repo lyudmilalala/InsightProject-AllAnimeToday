@@ -26,7 +26,13 @@ def crawl_9anime(type, s3):
         options = webdriver.ChromeOptions()
         options.add_argument("--headless")
         options.add_argument("--no-gpu")
-        driver = webdriver.Chrome(chrome_options=options)
+        options.add_argument('user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36')
+        driver = webdriver.Chrome(executable_path= './chromedriver', chrome_options=options)
+        driver.get('https://google.com')
+        with open('cookies_9a.json', 'r') as f:
+            cookies = json.loads(f.read())
+            for cookie in cookies:
+                 driver.add_cookie(cookie)
         ############# Determine the webpage to crawl ############
         url = ''
         a_pages = []
@@ -101,7 +107,13 @@ def crawl_crunchyroll(type, s3):
         options = webdriver.ChromeOptions()
         options.add_argument("--headless")
         options.add_argument("--no-gpu")
-        driver = webdriver.Chrome(chrome_options=options)
+        options.add_argument('user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36')
+        driver = webdriver.Chrome(executable_path= './chromedriver', chrome_options=options)
+        driver.get('https://google.com')
+        with open('cookies_cr.json', 'r') as f:
+            cookies = json.loads(f.read())
+            for cookie in cookies:
+                 driver.add_cookie(cookie)
         ############# Determine the webpage to crawl ############
         url = ''
         a_pages = []
@@ -164,7 +176,13 @@ def crawl_kissanime(type, s3):
         options = webdriver.ChromeOptions()
         options.add_argument("--headless")
         options.add_argument("--no-gpu")
-        driver = webdriver.Chrome(chrome_options=options)
+        options.add_argument('user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36')
+        driver = webdriver.Chrome(executable_path= './chromedriver', chrome_options=options)
+        driver.get('https://google.com')
+        with open('cookies_ka.json', 'r') as f:
+            cookies = json.loads(f.read())
+            for cookie in cookies:
+                driver.add_cookie(cookie)
         ############# Determine the webpage to crawl ############
         url = ''
         a_pages = []
@@ -245,8 +263,30 @@ def crawl_web(web_name, type):
         print('No such website')
         return -1
 
+def main():
+    t1 = threading.Thread(target=crawl_web, args=('9anime', 'update'))
+    t2 = threading.Thread(target=crawl_web, args=('crunchyroll', 'update'))
+    t3 = threading.Thread(target=crawl_web, args=('kissanime', 'update'))
 
-crawl_web('crunchyroll', 'update')
+    t1.start()
+    t2.start()
+    t3.start()
+
+    t1.join()
+    t2.join()
+    t3.join()
+
+    ACCESS_KEY, SECRET_KEY, ACCOUNT_REGION = getKey()
+    sns = boto3.client('sns',aws_access_key_id=ACCESS_KEY, aws_secret_access_key=SECRET_KEY)
+    jsonData = {}
+    jsonData['timestamp'] = datetime.datetime.now().strftime('%Y-%m-%d')
+    msg=json.dumps(jsonData)
+    try:
+        response = client.publish(TopicArn='arn:aws:sns:us-east-1:279380902069:ExtractTrigger', Message=msg)
+    except ClientError as e:
+        print(e.response['Error']['Message'])
+    else:
+        print('Trigger userUpdate successfully.')
 # def extract():
 #     driver = webdriver.Chrome()
 #     url = 'https://www.crunchyroll.com/videos/anime/alpha?group=all'

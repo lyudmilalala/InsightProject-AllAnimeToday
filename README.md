@@ -101,9 +101,11 @@ To build up such architecture:
    
    https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Scenario2.html
 
-2. Following this link https://aws.amazon.com/blogs/aws/new-vpc-endpoint-for-amazon-s3/ to add a S3 EndPoint to your VPC.
+2. Because private subnets for Lambda functions also need a security group, create a security group that covers all inbounds and outbounds you need.
 
-2. Following the same steps in step2 to add a SNS EndPoint to your VPC, just choose `com.amazonaws.<your-region>.sns` instead of `com.amazonaws.<your-region>.s3`.
+3. Following this link https://aws.amazon.com/blogs/aws/new-vpc-endpoint-for-amazon-s3/ to add a S3 EndPoint to your VPC.
+
+4. Following the same steps in step2 to add a SNS EndPoint to your VPC, just choose `com.amazonaws.<your-region>.sns` instead of `com.amazonaws.<your-region>.s3`.
 
 ## Create an AWS Lambda Execution Role
 
@@ -117,7 +119,7 @@ Set `COOKIE_SAVE_PATH` and `HOST` in `get_cookies.py` to your local directory an
 
 ## Start the application
 
-Get into the root folder of the repository and run `./src/BackEnd/run.sh`. You will get all VPC, S3 bucket, Postgres database, Lambda functions, CloudWatch events, and SNS topics set up. 
+Get into the root folder of the repository. Modify `./src/BackEnd/run.sh` according to comments and run it. You will get all VPC, S3 bucket, Postgres database, Lambda functions, CloudWatch events, and SNS topics set up. 
 
 Get into your AWS console, go Lambda -> Functions, and in the designer part, add the correpsonding trigger to each function.
 

@@ -8,12 +8,6 @@ from lxml.html import document_fromstring
 from psycopg2.extensions import AsIs
 import threading
 
-def getKey():
-    with open('../myKeys.txt', 'r') as f:
-        line = f.readline()
-        map = line.strip().split(',')
-    return map[0], map[1], map[2]
-
 def aname_cleaning(aname, ltype='(sub)'):
     # modify to the same lower and upper cases
     aname = aname.strip()
@@ -62,6 +56,22 @@ def enum_cleaning(enum):
         n1 = n0.lstrip('0')
         n = n.replace(n0, n1, 1)
     return n;
+
+def extract_info(rds, element, type, layer):
+    cur = rds.cursor()
+    statement = 'SELECT cp_type, t_tag, t_value FROM common_elements LEFT JOIN tags ON cp_cpid = t_cpid AND cp_level = %s AND t_type = %s ;'
+    cur.execute(statement, (layer, type))
+    rows = cur.fetchall()
+    e = None
+    for r in rows:
+        path = '//' + r[0]
+        if r[1] != None:
+            path = path + '[@' + r[1] + '=' + r[2] + ']'
+        e = element.xpath(path)
+        if type(e).__name__ == list:
+            return e
+        else:
+            return extract_info(rds, e, type, layer+1)
 
 def extract_info_9anime(page):
     tree = document_fromstring(page)

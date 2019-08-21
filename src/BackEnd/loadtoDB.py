@@ -59,19 +59,23 @@ def enum_cleaning(enum):
 
 def extract_info(rds, element, type, layer):
     cur = rds.cursor()
-    statement = 'SELECT cp_type, t_tag, t_value FROM common_elements LEFT JOIN tags ON cp_cpid = t_cpid AND cp_level = %s AND t_type = %s ;'
-    cur.execute(statement, (layer, type))
+    statement = 'SELECT cp.cp_level, cp.cp_type, t_tag, t_value FROM (SELECT * FROM common_path WHERE cp_level = %s) cp LEFT JOIN tags ON cp_cpid = t_cpid AND (t_type IS NULL OR t_type = %s);'
+    cur.execute(statement, (layer, t_type))
     rows = cur.fetchall()
-    e = None
+    elist = []
+    # import pdb; pdb.set_trace()
+    # if no more elements, return
+    if len(rows) == 0:
+        return elist
     for r in rows:
         path = '//' + r[0]
         if r[1] != None:
             path = path + '[@' + r[1] + '=' + r[2] + ']'
-        e = element.xpath(path)
-        if type(e).__name__ == list:
-            return e
-        else:
-            return extract_info(rds, e, type, layer+1)
+        elist = ele.xpath(path)
+        if type(e[0]).__name__ == 'HtmlElement':
+            for e in elist:
+                extract_info(rds, e, t_type, layer+1)
+    return elist
 
 def extract_info_9anime(page):
     tree = document_fromstring(page)
